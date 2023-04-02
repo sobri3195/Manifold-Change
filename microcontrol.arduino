@@ -1,0 +1,69 @@
+// Library untuk mengakses pin analog
+#include <AnalogInput.h>
+// Library untuk mengakses pin digital
+#include <DigitalInput.h>
+#include <DigitalOutput.h>
+
+// Definisi pin untuk sensor dan valve
+const int sensorPin1 = A0;
+const int sensorPin2 = A1;
+const int sensorPin3 = A2;
+const int valvePin1 = 2;
+const int valvePin2 = 3;
+
+// Deklarasi objek untuk sensor dan valve
+AnalogInput sensor1(sensorPin1);
+AnalogInput sensor2(sensorPin2);
+AnalogInput sensor3(sensorPin3);
+DigitalOutput valve1(valvePin1);
+DigitalOutput valve2(valvePin2);
+
+void setup() {
+  // Konfigurasi pin valve sebagai output
+  valve1.setOutput();
+  valve2.setOutput();
+}
+
+void loop() {
+  // Baca nilai sensor
+  int pressure1 = sensor1.read();
+  int pressure2 = sensor2.read();
+  int pressure3 = sensor3.read();
+
+  // Cek kondisi sensor dan kontrol valve
+  if (pressure1 > pressure2 && pressure1 > pressure3) {
+    // Aktifkan valve 1
+    valve1.high();
+    valve2.low();
+  } else if (pressure2 > pressure1 && pressure2 > pressure3) {
+    // Aktifkan valve 2
+    valve1.low();
+    valve2.high();
+  } else {
+    // Matikan kedua valve
+    valve1.low();
+    valve2.low();
+  }
+  
+  // Tampilkan data sensor dalam bentuk grafis bar
+  displayBarGraph(pressure1, 0, 1023, 5);
+  displayBarGraph(pressure2, 0, 1023, 6);
+  displayBarGraph(pressure3, 0, 1023, 7);
+}
+
+// Fungsi untuk menampilkan grafis bar pada LCD
+void displayBarGraph(int value, int minValue, int maxValue, int row) {
+  // Konversi nilai ke skala 0-16
+  int barWidth = map(value, minValue, maxValue, 0, 16);
+
+  // Tampilkan grafis bar pada baris tertentu
+  lcd.setCursor(0, row);
+  lcd.print("[");
+  for (int i = 0; i < barWidth; i++) {
+    lcd.print("=");
+  }
+  for (int i = barWidth; i < 16; i++) {
+    lcd.print(" ");
+  }
+  lcd.print("]");
+}
