@@ -1,0 +1,48 @@
+// Deklarasi pin sensor dan valve solenoid
+const int sensorPin1 = A0;
+const int sensorPin2 = A1;
+const int sensorPin3 = A2;
+const int valvePin1 = 2;
+const int valvePin2 = 3;
+
+// Deklarasi variabel untuk menyimpan nilai sensor
+int sensorValue1;
+int sensorValue2;
+int sensorValue3;
+
+void setup() {
+  // Konfigurasi pin valve solenoid sebagai output
+  pinMode(valvePin1, OUTPUT);
+  pinMode(valvePin2, OUTPUT);
+  
+  // Konfigurasi komunikasi serial untuk melihat nilai sensor
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Baca nilai sensor
+  sensorValue1 = analogRead(sensorPin1);
+  sensorValue2 = analogRead(sensorPin2);
+  sensorValue3 = analogRead(sensorPin3);
+  
+  // Cek nilai sensor dan ubah status valve solenoid
+  if (sensorValue1 > 500 || sensorValue2 > 500) {
+    digitalWrite(valvePin1, HIGH);
+    digitalWrite(valvePin2, LOW);
+  } else if (sensorValue3 > 500) {
+    digitalWrite(valvePin1, LOW);
+    digitalWrite(valvePin2, HIGH);
+  } else {
+    digitalWrite(valvePin1, LOW);
+    digitalWrite(valvePin2, LOW);
+  }
+  
+  // Tampilkan nilai sensor pada monitor serial
+  Serial.print("Sensor 1: ");
+  Serial.println(sensorValue1);
+  Serial.print("Sensor 2: ");
+  Serial.println(sensorValue2);
+  Serial.print("Sensor 3: ");
+  Serial.println(sensorValue3);
+  delay(1000);
+}
